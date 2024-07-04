@@ -2,8 +2,35 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:Ize.ViewModels"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:DataType=""
-             x:Class="Ize.MainMenu">
-  Welcome to Avalonia!
+             x:DataType="vm:MainMenuViewModel"
+             x:Class="Ize.Views.MainMenu">
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="*" />
+          <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <!-- Buttons -->
+        <StackPanel Grid.Column="0" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
+          <Button MinWidth="100" MaxWidth="250" Command="{Binding ResumePracticeCommand}">Resume Practice</Button>
+          <Button MinWidth="100" MaxWidth="250" Command="{Binding NewPracticeCommand}">New Practice</Button>
+          <Button MinWidth="100" MaxWidth="250" Command="{Binding EditDeckCommand}">Edit Deck</Button>
+          <Button MinWidth="100" MaxWidth="250" Command="{Binding NewDeckCommand}">New Deck</Button>
+        </StackPanel>
+
+        <Grid Grid.Column="1">
+          <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+          </Grid.RowDefinitions>
+
+          <Label Grid.Row="0">Recent Files:</Label>
+          <ListBox Grid.Row="1" ItemsSource="{Binding RecentFiles}" />
+        </Grid>
+
+
+    </Grid>
 </UserControl>

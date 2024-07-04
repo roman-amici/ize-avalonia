@@ -1,6 +1,14 @@
-﻿namespace Ize.ViewModels;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using Ize.Services;
 
-public class MainWindowViewModel : ViewModelBase
+namespace Ize.ViewModels;
+
+public partial class MainWindowViewModel : ViewModelBase
 {
-    public string Greeting => "Welcome to Avalonia!";
+    public MainWindowViewModel(ServicesCollection servicesCollection)
+    {
+        MainMenuViewModel = new MainMenuViewModel(servicesCollection.RecentFileService);
+    }
+
+    [ObservableProperty] private MainMenuViewModel mainMenuViewModel;
 }
