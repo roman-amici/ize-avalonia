@@ -7,19 +7,42 @@
              x:DataType="vm:MainMenuViewModel"
              x:Class="Ize.Views.MainMenu">
 
+    <UserControl.Styles>
+      <Style Selector="Button.menuButton">
+        <Setter Property="FontSize" Value="24" />
+        <Setter Property="MinWidth" Value="250" />
+        <Setter Property="Margin" Value="5" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="VerticalAlignment" Value="Stretch" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+      </Style>
+    </UserControl.Styles>
+
     <Grid>
         <Grid.ColumnDefinitions>
           <ColumnDefinition Width="*" />
           <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
+        <Grid.RowDefinitions>
+          <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
         <!-- Buttons -->
-        <StackPanel Grid.Column="0" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
-          <Button MinWidth="100" MaxWidth="250" Command="{Binding ResumePracticeCommand}">Resume Practice</Button>
-          <Button MinWidth="100" MaxWidth="250" Command="{Binding NewPracticeCommand}">New Practice</Button>
-          <Button MinWidth="100" MaxWidth="250" Command="{Binding EditDeckCommand}">Edit Deck</Button>
-          <Button MinWidth="100" MaxWidth="250" Command="{Binding NewDeckCommand}">New Deck</Button>
-        </StackPanel>
+        <Grid Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center">
+          <Grid.RowDefinitions>
+            <RowDefinition Height="*" MinHeight="100" />
+            <RowDefinition Height="*" MinHeight="100" />
+            <RowDefinition Height="*" MinHeight="100" />
+            <RowDefinition Height="*" MinHeight="100" />
+          </Grid.RowDefinitions>
+          
+          <Button Grid.Row="0" Classes="menuButton" Command="{Binding ResumePracticeCommand}">Resume Practice</Button>
+          <Button Grid.Row="1" Classes="menuButton" Command="{Binding NewPracticeCommand}">New Practice</Button>
+          <Button Grid.Row="2" Classes="menuButton" Command="{Binding EditDeckCommand}">Edit Deck</Button>
+          <Button Grid.Row="3" Classes="menuButton" Command="{Binding NewDeckCommand}">New Deck</Button>
+        </Grid>
 
         <Grid Grid.Column="1">
           <Grid.RowDefinitions>
@@ -27,8 +50,28 @@
             <RowDefinition Height="*" />
           </Grid.RowDefinitions>
 
-          <Label Grid.Row="0">Recent Files:</Label>
-          <ListBox Grid.Row="1" ItemsSource="{Binding RecentFiles}" />
+          <Label FontSize="36" Grid.Row="0">Recent Files:</Label>
+          <ListBox Grid.Row="1" ItemsSource="{Binding RecentFiles}" >
+            <ListBox.ItemTemplate>
+              <DataTemplate>
+                <StackPanel>
+
+                  <StackPanel Orientation="Horizontal">
+                    <Border BorderThickness="1" Width="50" Height="50">
+                      <Label Content="{Binding RecentFileType}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Border>
+                    <Label Content="{Binding FileName}" VerticalAlignment="Center">
+                      <Label.Foreground>
+                        <SolidColorBrush Opacity="0.5"/>
+                      </Label.Foreground>
+                    </Label>
+                  </StackPanel>
+
+                  <Label Content="{Binding FullPath}" />
+                </StackPanel>
+              </DataTemplate>
+            </ListBox.ItemTemplate>
+          </ListBox>
         </Grid>
 
 

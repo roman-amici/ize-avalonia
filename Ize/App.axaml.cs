@@ -19,11 +19,13 @@ public partial class App : Application
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             var servicesCollection = new ServicesCollection();
+            var vm = new MainWindowViewModel(servicesCollection);
+            servicesCollection.NavigationService.NavigateMain(MainWindowView.MainMenu, null);
 
         
             desktop.MainWindow = new MainWindow
             {
-                DataContext = new MainWindowViewModel(servicesCollection),
+                DataContext = vm,
             };
         }
 

@@ -21,6 +21,8 @@ public class IzePiles
     public string DeckPath { get; set; } = string.Empty;
     public Dictionary<string, List<CardMetadata>> Piles { get; } = new();
 
+    public List<string> PilesOrder = new();
+
     public Task SaveToFile()
     {
         return SaveToFile(OriginalFilePath);
@@ -36,10 +38,10 @@ public class IzePiles
 
         await file.WriteLineAsync(DeckPath);
 
-        foreach (var pile in Piles)
+        foreach (var pileName in PilesOrder)
         {
-            await file.WriteLineAsync(pile.Key);
-            var cards = pile.Value;
+            await file.WriteLineAsync(pileName);
+            var cards = Piles[pileName];
 
             // Sort to avoid the order changing drastically for each run.
             // We shuffle in the app anyway.
@@ -65,6 +67,11 @@ public class IzePiles
         {
             var trimmedLine = line.Trim();
 
+            if (string.IsNullOrEmpty(trimmedLine))
+            {
+                continue;
+            }
+
             if (readDeckPath)
             {
                 piles.DeckPath = trimmedLine;
@@ -72,14 +79,10 @@ public class IzePiles
                 continue;
             }
 
-            if (string.IsNullOrEmpty(trimmedLine))
-            {
-                continue;
-            }
-
             if (string.IsNullOrEmpty(currentPile))
             {
                 currentPile = trimmedLine;
+                piles.PilesOrder.Add(currentPile);
                 piles.Piles[currentPile] = [];
                 continue;
             }

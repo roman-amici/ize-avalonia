@@ -8,4 +8,5 @@ public class ServicesCollection
     }
 
     public RecentFileService RecentFileService {get;}
+    public NavigationService NavigationService {get;} = new();
 }
