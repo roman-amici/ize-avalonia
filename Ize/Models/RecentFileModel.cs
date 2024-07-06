@@ -1,7 +1,7 @@
 using System.IO;
 using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace Ize.ViewModels;
+namespace Ize.Model;
 
 public partial class RecentFileModel : ObservableObject
 {

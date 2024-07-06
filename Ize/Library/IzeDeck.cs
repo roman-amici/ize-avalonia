@@ -10,10 +10,12 @@ public class IzeDeck
 {
     public string? LoadedFilePath { get; private set; } = null;
     public Dictionary<ulong, IzeCard> Cards { get; set; } = new();
+    public string? Name => string.IsNullOrEmpty(LoadedFilePath) ? null : Path.GetFileNameWithoutExtension(LoadedFilePath); 
 
     public static async Task<IzeDeck> LoadFromFile(string filePath)
     {
         var deck = new IzeDeck();
+        deck.LoadedFilePath = Path.GetFullPath(filePath);
 
         IzeCard? nextCard = null;
         await foreach (var line in File.ReadLinesAsync(filePath))

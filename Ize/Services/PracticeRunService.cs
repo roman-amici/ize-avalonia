@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Ize.Library;
 
@@ -15,13 +16,18 @@ public class PracticeRunService
         return new PracticeRunService(piles.PilesOrder[0], deck, piles);
     }
 
-    public string ActivePile {get;}
+    public List<CardMetadata> GetActivePile()
+    {
+        return Piles.Piles[ActivePileName];
+    }
+
+    public string ActivePileName {get;}
     public IzePiles Piles {get;}
     public IzeDeck Deck {get;}
 
     public PracticeRunService(string activePile, IzeDeck deck, IzePiles piles)
     {
-        ActivePile = activePile;
+        ActivePileName = activePile;
         Piles = piles;
         Deck = deck;
 
@@ -37,11 +43,11 @@ public class PracticeRunService
     public void Shuffle()
     {
         var random = new Random();
-        Piles.Piles[ActivePile].Sort( (_, _) => random.Next(-200, 200));
+        Piles.Piles[ActivePileName].Sort( (_, _) => random.Next(-200, 200));
     }
 
     public IzeCard? CurrentCard(){
-        var activePile = Piles.Piles[ActivePile];
+        var activePile = Piles.Piles[ActivePileName];
 
         if (activePile.Count == 0)
         {
@@ -55,7 +61,7 @@ public class PracticeRunService
 
     public void MoveTo(string destinationPile)
     {
-        var activePile = Piles.Piles[ActivePile];
+        var activePile = Piles.Piles[ActivePileName];
 
         var cardMeta = activePile[^1];
         activePile.RemoveAt(activePile.Count - 1);
@@ -65,7 +71,7 @@ public class PracticeRunService
 
     public void Skip()
     {
-        var activePile = Piles.Piles[ActivePile];
+        var activePile = Piles.Piles[ActivePileName];
 
         var cardMeta = activePile[^1];
         activePile.RemoveAt(activePile.Count - 1);

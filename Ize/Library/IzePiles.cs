@@ -100,6 +100,7 @@ public class IzePiles
             else
             {
                 currentPile = trimmedLine;
+                piles.PilesOrder.Add(currentPile);
                 piles.Piles[currentPile] = [];
             }
         }

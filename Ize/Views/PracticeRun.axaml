@@ -1,0 +1,75 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:Ize.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Ize.Views.PracticeRun"
+             x:DataType="vm:PracticeRunViewModel">
+    <Grid>
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="*" />
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="Auto" />
+      </Grid.RowDefinitions>
+
+      <TextBlock Grid.Row="0" FontSize="16" HorizontalAlignment="Center">
+        <Run>Now Practicing </Run>
+        <Run Text="{Binding DeckName}" />
+      </TextBlock>
+
+      <Grid Grid.Row="1" MaxHeight="400" MaxWidth="600" HorizontalAlignment="Center" VerticalAlignment="Center">
+        <Border BorderThickness="2" BorderBrush="White" BoxShadow="5 5 10 0 DarkGray">
+          <Grid MinHeight="200" MinWidth="300">
+            <Grid.RowDefinitions>
+              <RowDefinition Height="Auto" />
+              <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <TextBlock Grid.Row="0" HorizontalAlignment="Center" FontSize="16" Text="{Binding CurrentCard.CurrentSide, Mode=OneWay}" />
+            <TextBlock 
+              Grid.Row="1"
+              FontSize="24"
+              HorizontalAlignment="Center" 
+              VerticalAlignment="Center" 
+              Margin="25" 
+              Text="{Binding CurrentCard.CurrentText, Mode=OneWay}" 
+              TextWrapping="Wrap" />
+          </Grid>
+        </Border>
+      </Grid>
+
+      <ProgressBar 
+        Grid.Row="2" 
+        ShowProgressText="true" 
+        Minimum="1" 
+        Maximum="{Binding CurrentPileTotal}" 
+        Value="{Binding CurrentPileProgress}"
+        ProgressTextFormat="{}{0}/{3}" />
+
+      <ItemsControl Grid.Row="3" ItemsSource="{Binding Piles}">
+        <ItemsControl.ItemTemplate>
+          <DataTemplate >
+            <Button Margin="5">
+              <!-- TODO: Hotkeys -->
+              <TextBlock>
+                <Run Text="{Binding HotKey}" />
+                <Run Text=": " />
+                <Run Text="{Binding PileName}" />
+                <Run Text="{Binding RemainingCards, StringFormat=' ({0})'}" />
+              </TextBlock>
+            </Button>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+
+          <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+              <WrapPanel Orientation="Horizontal" />
+            </ItemsPanelTemplate>
+          </ItemsControl.ItemsPanel>
+      </ItemsControl>
+
+
+    </Grid>
+</UserControl>

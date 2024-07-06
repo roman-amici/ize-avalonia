@@ -8,6 +8,7 @@ using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Ize.Library;
+using Ize.Model;
 using Ize.Services;
 
 namespace Ize.ViewModels;
