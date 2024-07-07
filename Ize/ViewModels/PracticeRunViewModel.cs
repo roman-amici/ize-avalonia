@@ -3,6 +3,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using Avalonia.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Ize.Library;
@@ -15,7 +16,7 @@ public partial class PracticeRunViewModel(NavigationService navigationService) :
 {
     private PracticeRunService? practiceRun;
 
-    [ObservableProperty] 
+    [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasCurrentCard))]
     private CardModel? currentCard;
     [ObservableProperty] private string deckName = string.Empty;
@@ -32,11 +33,14 @@ public partial class PracticeRunViewModel(NavigationService navigationService) :
         this.practiceRun = practiceRun;
         Piles.Clear();
 
-        for (var  i = 0 ; i < practiceRun.Piles.PilesOrder.Count; i++)
+        for (var i = 0; i < practiceRun.Piles.PilesOrder.Count; i++)
         {
             var pileName = practiceRun.Piles.PilesOrder[i];
-            Piles.Add(new PileModel(){
-                HotKey =  (char)('0' + (i + 1)),
+            var keyNumber = i + 1;
+            Piles.Add(new PileModel()
+            {
+                HotKey = PileModel.NumberKey(keyNumber),
+                DisplayHotKey = keyNumber.ToString(),
                 PileName = pileName,
                 RemainingCards = practiceRun.Piles.Piles[pileName].Count
             });
@@ -87,7 +91,7 @@ public partial class PracticeRunViewModel(NavigationService navigationService) :
             var sourcePileModel = Piles.First(x => x.PileName == practiceRun.ActivePileName);
             sourcePileModel.RemainingCards = practiceRun.Piles.Piles[practiceRun.ActivePileName].Count;
 
-            var destinationPileModel = Piles.First( x => x.PileName == destinationPileName);
+            var destinationPileModel = Piles.First(x => x.PileName == destinationPileName);
             destinationPileModel.RemainingCards = practiceRun.Piles.Piles[destinationPileName].Count;
         }
 
@@ -105,7 +109,7 @@ public partial class PracticeRunViewModel(NavigationService navigationService) :
         practiceRun.MoveToActive(destinationPileName);
         practiceRun.Shuffle();
 
-        foreach(var pile in Piles)
+        foreach (var pile in Piles)
         {
             pile.RemainingCards = practiceRun.Piles.Piles[pile.PileName].Count;
         }
@@ -140,8 +144,19 @@ public partial class PracticeRunViewModel(NavigationService navigationService) :
             }
         }
 
+        practiceRun = null;
         navigationService.NavigateMain(MainWindowView.MainMenu, null);
     }
 
-    public Func<Task<string?>>? GetSavePilesPath {get; set;}
+    [RelayCommand]
+    public void HotKey(string displayHotKey)
+    {
+        var pile = Piles.FirstOrDefault(x => x.DisplayHotKey == displayHotKey);
+        if (pile != null)
+        {
+            MoveToPile(pile.PileName);
+        }
+    }
+
+    public Func<Task<string?>>? GetSavePilesPath { get; set; }
 }

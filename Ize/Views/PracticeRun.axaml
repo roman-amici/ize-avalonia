@@ -7,6 +7,28 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Ize.Views.PracticeRun"
              x:DataType="vm:PracticeRunViewModel">
+
+    <UserControl.KeyBindings>
+      <KeyBinding Gesture="NumPad1" Command="{Binding HotKeyCommand}" CommandParameter="1" />
+      <KeyBinding Gesture="NumPad2" Command="{Binding HotKeyCommand}" CommandParameter="2" />
+      <KeyBinding Gesture="NumPad3" Command="{Binding HotKeyCommand}" CommandParameter="3" />
+      <KeyBinding Gesture="NumPad4" Command="{Binding HotKeyCommand}" CommandParameter="4" />
+      <KeyBinding Gesture="NumPad5" Command="{Binding HotKeyCommand}" CommandParameter="5" />
+      <KeyBinding Gesture="NumPad6" Command="{Binding HotKeyCommand}" CommandParameter="6" />
+      <KeyBinding Gesture="NumPad7" Command="{Binding HotKeyCommand}" CommandParameter="7" />
+      <KeyBinding Gesture="NumPad8" Command="{Binding HotKeyCommand}" CommandParameter="8" />
+      <KeyBinding Gesture="NumPad9" Command="{Binding HotKeyCommand}" CommandParameter="9" />
+
+      <KeyBinding Gesture="D1" Command="{Binding HotKeyCommand}" CommandParameter="1" />
+      <KeyBinding Gesture="D2" Command="{Binding HotKeyCommand}" CommandParameter="2" />
+      <KeyBinding Gesture="D3" Command="{Binding HotKeyCommand}" CommandParameter="3" />
+      <KeyBinding Gesture="D4" Command="{Binding HotKeyCommand}" CommandParameter="4" />
+      <KeyBinding Gesture="D5" Command="{Binding HotKeyCommand}" CommandParameter="5" />
+      <KeyBinding Gesture="D6" Command="{Binding HotKeyCommand}" CommandParameter="6" />
+      <KeyBinding Gesture="D7" Command="{Binding HotKeyCommand}" CommandParameter="7" />
+      <KeyBinding Gesture="D8" Command="{Binding HotKeyCommand}" CommandParameter="8" />
+      <KeyBinding Gesture="D9" Command="{Binding HotKeyCommand}" CommandParameter="9" />
+    </UserControl.KeyBindings>
     <Grid>
       <Grid.RowDefinitions>
         <RowDefinition Height="Auto" />
@@ -46,7 +68,11 @@
         </Border>
       </Grid>
 
-      <Grid Grid.Row="1" Height="400" Width="750"  HorizontalAlignment="Center" VerticalAlignment="Center" IsVisible="{Binding HasCurrentCard}">
+      <Grid 
+        Grid.Row="1" 
+        Height="400" Width="750"
+        HorizontalAlignment="Center" VerticalAlignment="Center" 
+        IsVisible="{Binding HasCurrentCard}">
         <Border BorderThickness="2" BorderBrush="White" BoxShadow="5 5 10 0 DarkGray">
           <Grid>
             <Grid.RowDefinitions>
@@ -68,7 +94,7 @@
               TextWrapping="Wrap"
                />
 
-            <Button Grid.Row="2" HorizontalAlignment="Center" Command="{Binding FlipCommand}">
+            <Button Grid.Row="2" HorizontalAlignment="Center" Command="{Binding FlipCommand}" HotKey="NumPad0">
               Flip
             </Button> 
           </Grid>
@@ -88,10 +114,11 @@
           <DataTemplate >
             <Button Margin="5"
               Command="{Binding $parent[local:PracticeRun].((vm:PracticeRunViewModel)DataContext).MoveToPileCommand}"
-              CommandParameter="{Binding PileName}">
-              <!-- TODO: Hotkeys -->
+              CommandParameter="{Binding PileName}" 
+              >
+              <!-- HotKey doesn't currently work. Workaround is -->
               <TextBlock>
-                <Run Text="{Binding HotKey}" />
+                <Run Text="{Binding DisplayHotKey}" />
                 <Run Text=": " />
                 <Run Text="{Binding PileName}" />
                 <Run Text="{Binding RemainingCards, StringFormat=' ({0})'}" />

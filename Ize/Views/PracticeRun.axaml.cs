@@ -2,6 +2,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Platform.Storage;
 using Ize.ViewModels;
 
@@ -37,7 +38,8 @@ public partial class PracticeRun : UserControl
             return null;
         }
 
-        var files = await topLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions{
+        var files = await topLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+        {
             AllowMultiple = false,
             Title = "Save Piles",
             FileTypeFilter = [new FilePickerFileType("Piles"){
@@ -45,7 +47,8 @@ public partial class PracticeRun : UserControl
             }]
         });
 
-        if (files.Count == 0){
+        if (files.Count == 0)
+        {
             return null;
         }
 

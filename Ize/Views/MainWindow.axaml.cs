@@ -1,3 +1,5 @@
+using System;
+using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
@@ -10,14 +12,16 @@ public partial class MainWindow : Window
 {
     public MainWindow()
     {
-        InitializeComponent();        
+        InitializeComponent();
     }
 
-    public void Window_Closing(object? sender, WindowClosingEventArgs e )
+    public void Window_Closing(object? sender, WindowClosingEventArgs e)
     {
         if (DataContext is MainWindowViewModel vm)
         {
             vm.MainMenuViewModel.SaveRecentFiles();
+
+            Task.Run(async () => await vm.PracticeRunViewModel.Finish()).Wait();
         }
     }
 }

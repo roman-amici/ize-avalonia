@@ -19,17 +19,17 @@ public partial class MainMenuViewModel : ObservableObject
     private readonly RecentFileService recentFileService;
     private readonly NavigationService navigationService;
 
-    public Func< string, IEnumerable<FilePickerFileType>, Task<string?>>? PickFile {get; set;}
+    public Func<string, IEnumerable<FilePickerFileType>, Task<string?>>? PickFile { get; set; }
 
     public MainMenuViewModel(RecentFileService recentFileService, NavigationService navigationService)
     {
         this.recentFileService = recentFileService;
         this.navigationService = navigationService;
 
-        foreach(var filePath in recentFileService!.FilePaths)
+        foreach (var filePath in recentFileService!.FilePaths)
         {
             recentFiles.Add(new RecentFileModel(filePath));
-        }        
+        }
     }
 
     [ObservableProperty] private ObservableCollection<RecentFileModel> recentFiles = new();
@@ -95,21 +95,21 @@ public partial class MainMenuViewModel : ObservableObject
     [RelayCommand]
     private void NewPractice()
     {
-        
+
     }
 
 
     [RelayCommand]
     private async Task EditDeck(string filePath)
     {
-        
+
     }
 
 
     [RelayCommand]
     private void NewDeck()
     {
-        
+
     }
 
     public event EventHandler<IzeDeck>? DeckSelected;

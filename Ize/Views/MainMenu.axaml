@@ -3,6 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="using:Ize.ViewModels"
+             xmlns:local="using:Ize.Views"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:DataType="vm:MainMenuViewModel"
              x:Class="Ize.Views.MainMenu">
@@ -54,21 +55,19 @@
           <ListBox Grid.Row="1" ItemsSource="{Binding RecentFiles}" >
             <ListBox.ItemTemplate>
               <DataTemplate>
-                <StackPanel>
+                <Button Command="{Binding $parent[local:MainMenu].((vm:MainMenuViewModel)DataContext).RecentSelectedCommand}" CommandParameter="{Binding}" HorizontalAlignment="Stretch" >
+                  <StackPanel>
 
-                  <StackPanel Orientation="Horizontal">
-                    <Border BorderThickness="1" Width="50" Height="50">
-                      <Label Content="{Binding RecentFileType}" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                    </Border>
-                    <Label Content="{Binding FileName}" VerticalAlignment="Center">
-                      <Label.Foreground>
-                        <SolidColorBrush Opacity="0.5"/>
-                      </Label.Foreground>
-                    </Label>
+                    <StackPanel Orientation="Horizontal">
+                      <Border BorderThickness="1" BorderBrush="White" Width="50" Height="50">
+                        <Label Content="{Binding RecentFileType}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                      </Border>
+                      <Label Margin="25" FontSize="16" Content="{Binding FileName}" VerticalAlignment="Center" />
+                    </StackPanel>
+
+                    <Label Content="{Binding FullPath}" />
                   </StackPanel>
-
-                  <Label Content="{Binding FullPath}" />
-                </StackPanel>
+                </Button>
               </DataTemplate>
             </ListBox.ItemTemplate>
           </ListBox>
