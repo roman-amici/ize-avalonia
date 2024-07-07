@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
@@ -33,31 +34,61 @@ public partial class MainMenuViewModel : ObservableObject
 
     [ObservableProperty] private ObservableCollection<RecentFileModel> recentFiles = new();
 
-    [RelayCommand]
-    private async Task ResumePractice()
+    public void SaveRecentFiles()
     {
-        var task = PickFile?.Invoke("Select Practice Run", [new FilePickerFileType("piles"){
-            Patterns = ["*.piles"]
-        }]);
+        recentFileService.SaveToFile();
+    }
 
-        if (task == null)
+    private void AddToRecentFiles(string filePath)
+    {
+        if (RecentFiles.FirstOrDefault(x => x.FullPath == filePath) == null)
         {
-            return;
+            recentFileService.FilePaths.Add(filePath);
+            RecentFiles.Add(new RecentFileModel(filePath));
         }
+    }
 
-        var filePath = await task;
+    [RelayCommand]
+    private async Task ResumePractice(string? filePath)
+    {
+        if (string.IsNullOrEmpty(filePath))
+        {
+            var task = PickFile?.Invoke("Select Practice Run", [new FilePickerFileType("piles"){
+                Patterns = ["*.piles"]
+            }]);
+
+            if (task == null)
+            {
+                return;
+            }
+
+            filePath = await task;
+        }
 
         if (string.IsNullOrEmpty(filePath))
         {
             return;
         }
 
-        RecentFiles.Add(new RecentFileModel(filePath));
-        recentFileService.FilePaths.Add(filePath);
+        AddToRecentFiles(filePath);
 
         var pilesService = await PracticeRunService.CreateFromPiles(filePath);
         navigationService.NavigateMain(MainWindowView.PracticeRun, pilesService);
+    }
 
+    [RelayCommand]
+    private async Task RecentSelected(RecentFileModel file)
+    {
+        if (file.RecentFileType == RecentFileType.Piles)
+        {
+            await ResumePractice(file.FullPath);
+        }
+        else if (file.RecentFileType == RecentFileType.Deck)
+        {
+            await EditDeck(file.FullPath);
+        }
+
+        // TODO: Infer type from file for "other".
     }
 
 
@@ -69,7 +100,7 @@ public partial class MainMenuViewModel : ObservableObject
 
 
     [RelayCommand]
-    private void EditDeck()
+    private async Task EditDeck(string filePath)
     {
         
     }

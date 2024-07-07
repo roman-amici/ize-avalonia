@@ -39,15 +39,27 @@ public class PracticeRunService
         Shuffle();
     }
 
+    public void MoveToActive(string destinationPileName)
+    {
+        if (destinationPileName == ActivePileName)
+        {
+            return;
+        }
+
+        var destinationPile = Piles.Piles[destinationPileName];
+        var activePile = GetActivePile();
+        activePile.AddRange( destinationPile );
+        destinationPile.Clear();
+    }
 
     public void Shuffle()
     {
         var random = new Random();
-        Piles.Piles[ActivePileName].Sort( (_, _) => random.Next(-200, 200));
+        GetActivePile().Sort( (_, _) => random.Next(-200, 200));
     }
 
     public IzeCard? CurrentCard(){
-        var activePile = Piles.Piles[ActivePileName];
+        var activePile = GetActivePile();
 
         if (activePile.Count == 0)
         {
@@ -63,6 +75,11 @@ public class PracticeRunService
     {
         var activePile = Piles.Piles[ActivePileName];
 
+        if (activePile.Count == 0)
+        {
+            return;
+        }
+
         var cardMeta = activePile[^1];
         activePile.RemoveAt(activePile.Count - 1);
 
@@ -72,6 +89,11 @@ public class PracticeRunService
     public void Skip()
     {
         var activePile = Piles.Piles[ActivePileName];
+
+        if (activePile.Count == 0)
+        {
+            return;
+        }
 
         var cardMeta = activePile[^1];
         activePile.RemoveAt(activePile.Count - 1);

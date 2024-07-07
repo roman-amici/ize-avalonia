@@ -305,6 +305,8 @@ node_modules/
 *.ncb
 *.aps
 
+**/recents.json
+
 # Visual Studio LightSwitch build output
 **/*.HTMLClient/GeneratedArtifacts
 **/*.DesktopClient/GeneratedArtifacts

@@ -7,15 +7,15 @@ namespace Ize.ViewModels;
 public partial class MainWindowViewModel : ViewModelBase
 {
 
-    private readonly MainMenuViewModel mainMenuViewModel;
-    private readonly PracticeRunViewModel practiceRunViewModel;
+    public MainMenuViewModel MainMenuViewModel {get;}
+    public PracticeRunViewModel PracticeRunViewModel {get;}
 
     [ObservableProperty] private ObservableObject? selectedViewModel;
 
     public MainWindowViewModel(ServicesCollection servicesCollection)
     {
-        mainMenuViewModel = new MainMenuViewModel(servicesCollection.RecentFileService, servicesCollection.NavigationService);
-        practiceRunViewModel = new PracticeRunViewModel();
+        MainMenuViewModel = new MainMenuViewModel(servicesCollection.RecentFileService, servicesCollection.NavigationService);
+        PracticeRunViewModel = new PracticeRunViewModel(servicesCollection.NavigationService);
 
         servicesCollection.NavigationService.NavigationRequested += Navigate;
     }
@@ -25,13 +25,13 @@ public partial class MainWindowViewModel : ViewModelBase
         switch (view)
         {
             case MainWindowView.MainMenu:
-                SelectedViewModel = mainMenuViewModel;
+                SelectedViewModel = MainMenuViewModel;
                 break;
             case MainWindowView.PracticeRun:
                 if (sessionObject is PracticeRunService practiceRun)
                 {
-                    practiceRunViewModel.ActivateSession(practiceRun);
-                    SelectedViewModel = practiceRunViewModel;
+                    PracticeRunViewModel.ActivateSession(practiceRun);
+                    SelectedViewModel = PracticeRunViewModel;
                 }
                 else
                 {

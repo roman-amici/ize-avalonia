@@ -33,7 +33,6 @@ public partial class MainMenu : UserControl
                 vm.PickFile = PickFile;
             }
         }
-
     }
 
     private async Task<string?> PickFile(string title, IEnumerable<FilePickerFileType> fileTypes)

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Ize.Library;
@@ -10,7 +11,7 @@ using Ize.Services;
 
 namespace Ize.ViewModels;
 
-public partial class PracticeRunViewModel : ObservableObject
+public partial class PracticeRunViewModel(NavigationService navigationService) : ObservableObject
 {
     private PracticeRunService? practiceRun;
 
@@ -24,6 +25,7 @@ public partial class PracticeRunViewModel : ObservableObject
     [ObservableProperty] private int currentPileProgress;
 
     public bool HasCurrentCard => CurrentCard != null;
+
 
     public void ActivateSession(PracticeRunService practiceRun)
     {
@@ -58,7 +60,7 @@ public partial class PracticeRunViewModel : ObservableObject
         if (nextCard != null)
         {
             CurrentCard = new CardModel(nextCard);
-            CurrentPileProgress++;
+            CurrentPileProgress = CurrentPileTotal - practiceRun.GetActivePile().Count + 1;
         }
         else
         {
@@ -67,21 +69,79 @@ public partial class PracticeRunViewModel : ObservableObject
     }
 
     [RelayCommand]
-    public void MoveCurrentCard(string destinationPileName)
+    public void MoveToPile(string destinationPileName)
     {
         if (practiceRun == null)
         {
             return;
         }
 
-        practiceRun.MoveTo(destinationPileName);
+        if (destinationPileName == practiceRun.ActivePileName)
+        {
+            practiceRun.Skip();
+        }
+        else
+        {
+            practiceRun.MoveTo(destinationPileName);
 
-        var sourcePileModel = Piles.First(x => x.PileName == practiceRun.ActivePileName);
-        sourcePileModel.RemainingCards =  practiceRun.Piles.Piles[practiceRun.ActivePileName].Count;
+            var sourcePileModel = Piles.First(x => x.PileName == practiceRun.ActivePileName);
+            sourcePileModel.RemainingCards = practiceRun.Piles.Piles[practiceRun.ActivePileName].Count;
 
-        var destinationPileModel = Piles.First( x => x.PileName == destinationPileName);
-        destinationPileModel.RemainingCards = practiceRun.Piles.Piles[destinationPileName].Count;
+            var destinationPileModel = Piles.First( x => x.PileName == destinationPileName);
+            destinationPileModel.RemainingCards = practiceRun.Piles.Piles[destinationPileName].Count;
+        }
+
+        NextCard();
     }
 
+    [RelayCommand]
+    public void Reshuffle(string destinationPileName)
+    {
+        if (practiceRun == null)
+        {
+            return;
+        }
 
+        practiceRun.MoveToActive(destinationPileName);
+        practiceRun.Shuffle();
+
+        foreach(var pile in Piles)
+        {
+            pile.RemainingCards = practiceRun.Piles.Piles[pile.PileName].Count;
+        }
+
+        CurrentPileTotal = practiceRun.GetActivePile().Count;
+
+        NextCard();
+    }
+
+    [RelayCommand]
+    public void Flip()
+    {
+        CurrentCard?.Flip();
+    }
+
+    [RelayCommand]
+    public async Task Finish()
+    {
+        if (practiceRun != null)
+        {
+            if (string.IsNullOrEmpty(practiceRun.Piles.OriginalFilePath))
+            {
+                if (GetSavePilesPath != null)
+                {
+                    practiceRun.Piles.OriginalFilePath = await GetSavePilesPath() ?? string.Empty;
+                }
+            }
+
+            if (!string.IsNullOrEmpty(practiceRun.Piles.OriginalFilePath))
+            {
+                await practiceRun.Piles.SaveToFile();
+            }
+        }
+
+        navigationService.NavigateMain(MainWindowView.MainMenu, null);
+    }
+
+    public Func<Task<string?>>? GetSavePilesPath {get; set;}
 }

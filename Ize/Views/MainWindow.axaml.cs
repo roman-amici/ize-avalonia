@@ -10,7 +10,14 @@ public partial class MainWindow : Window
 {
     public MainWindow()
     {
-        InitializeComponent();
-        
+        InitializeComponent();        
+    }
+
+    public void Window_Closing(object? sender, WindowClosingEventArgs e )
+    {
+        if (DataContext is MainWindowViewModel vm)
+        {
+            vm.MainMenuViewModel.SaveRecentFiles();
+        }
     }
 }

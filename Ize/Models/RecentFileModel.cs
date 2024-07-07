@@ -12,7 +12,7 @@ public partial class RecentFileModel : ObservableObject
         var fileType = RecentFileType.Other;
         if (Path.GetExtension(fullPath) == ".deck") {
             fileType = RecentFileType.Deck;
-        } else if (Path.GetExtension(fullPath) == ".pile") {
+        } else if (Path.GetExtension(fullPath) == ".piles") {
             fileType = RecentFileType.Piles;
         }
 

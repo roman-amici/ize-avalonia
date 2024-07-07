@@ -3,6 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="using:Ize.ViewModels"
+             xmlns:local="using:Ize.Views"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Ize.Views.PracticeRun"
              x:DataType="vm:PracticeRunViewModel">
@@ -19,14 +20,43 @@
         <Run Text="{Binding DeckName}" />
       </TextBlock>
 
-      <Grid Grid.Row="1" MaxHeight="400" MaxWidth="600" HorizontalAlignment="Center" VerticalAlignment="Center">
+      <Button Grid.Row="0" FontSize="16" HorizontalAlignment="Left" Command="{Binding FinishCommand}">
+        &lt;-
+      </Button>
+
+      <Grid Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" IsVisible="{Binding !HasCurrentCard}" >
+        <Border BorderThickness="2" BorderBrush="White">
+          <StackPanel Orientation="Vertical">
+            <TextBlock>Reshuffle?</TextBlock>
+            <ItemsControl ItemsSource="{Binding Piles}">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate >
+                  <Button Margin="5"
+                    Command="{Binding $parent[local:PracticeRun].((vm:PracticeRunViewModel)DataContext).Reshuffle}"
+                    CommandParameter="{Binding PileName}">
+                    <TextBlock MinWidth="250" >
+                      <Run Text="{Binding PileName}" />
+                      <Run Text="{Binding RemainingCards, StringFormat=' ({0})'}" />
+                    </TextBlock>
+                  </Button>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </StackPanel>
+        </Border>
+      </Grid>
+
+      <Grid Grid.Row="1" Height="400" Width="750"  HorizontalAlignment="Center" VerticalAlignment="Center" IsVisible="{Binding HasCurrentCard}">
         <Border BorderThickness="2" BorderBrush="White" BoxShadow="5 5 10 0 DarkGray">
-          <Grid MinHeight="200" MinWidth="300">
+          <Grid>
             <Grid.RowDefinitions>
               <RowDefinition Height="Auto" />
               <RowDefinition Height="*" />
+              <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
+            <TextBlock Grid.Row="0" HorizontalAlignment="Right" Text="{Binding CurrentCard.CardIndex}" />
+            
             <TextBlock Grid.Row="0" HorizontalAlignment="Center" FontSize="16" Text="{Binding CurrentCard.CurrentSide, Mode=OneWay}" />
             <TextBlock 
               Grid.Row="1"
@@ -35,7 +65,12 @@
               VerticalAlignment="Center" 
               Margin="25" 
               Text="{Binding CurrentCard.CurrentText, Mode=OneWay}" 
-              TextWrapping="Wrap" />
+              TextWrapping="Wrap"
+               />
+
+            <Button Grid.Row="2" HorizontalAlignment="Center" Command="{Binding FlipCommand}">
+              Flip
+            </Button> 
           </Grid>
         </Border>
       </Grid>
@@ -51,7 +86,9 @@
       <ItemsControl Grid.Row="3" ItemsSource="{Binding Piles}">
         <ItemsControl.ItemTemplate>
           <DataTemplate >
-            <Button Margin="5">
+            <Button Margin="5"
+              Command="{Binding $parent[local:PracticeRun].((vm:PracticeRunViewModel)DataContext).MoveToPileCommand}"
+              CommandParameter="{Binding PileName}">
               <!-- TODO: Hotkeys -->
               <TextBlock>
                 <Run Text="{Binding HotKey}" />
