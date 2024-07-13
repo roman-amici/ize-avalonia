@@ -134,7 +134,7 @@ public partial class PracticeRunViewModel(NavigationService navigationService) :
             {
                 if (GetSavePilesPath != null)
                 {
-                    practiceRun.Piles.OriginalFilePath = await GetSavePilesPath() ?? string.Empty;
+                    practiceRun.Piles.OriginalFilePath = await GetSavePilesPath(practiceRun.Deck.Name ?? string.Empty) ?? string.Empty;
                 }
             }
 
@@ -158,5 +158,5 @@ public partial class PracticeRunViewModel(NavigationService navigationService) :
         }
     }
 
-    public Func<Task<string?>>? GetSavePilesPath { get; set; }
+    public Func<string, Task<string?>>? GetSavePilesPath { get; set; }
 }

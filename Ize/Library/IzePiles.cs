@@ -1,6 +1,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Dynamic;
 using System.IO;
 using System.Linq;
@@ -17,16 +18,45 @@ public class CardMetadata
 
 public class IzePiles
 {
+
     public string OriginalFilePath { get; set; } = string.Empty;
     public string DeckPath { get; set; } = string.Empty;
     public Dictionary<string, List<CardMetadata>> Piles { get; } = new();
 
     public List<string> PilesOrder = new();
 
+    public IzePiles(){}
+    
+    public IzePiles(IEnumerable<string> pilesOrder, IzeDeck deck)
+    {
+
+        PilesOrder = [..pilesOrder];
+
+        if (PilesOrder.Count == 0)
+        {
+            throw new InvalidEnumArgumentException("Must contain at least one pile");
+        }
+
+        foreach(var pileName in PilesOrder)
+        {
+            Piles[pileName] = new List<CardMetadata>();
+        }
+
+        var defaultPile = pilesOrder.First();
+
+        foreach(var card in deck.Cards)
+        {
+            Piles[defaultPile].Add(new CardMetadata(){
+                CardIndex = card.Value.CardIndex
+            });
+        }
+    }
+
     public Task SaveToFile()
     {
         return SaveToFile(OriginalFilePath);
     }
+
     public async Task SaveToFile(string filePath)
     {
         using var file = File.CreateText(filePath);

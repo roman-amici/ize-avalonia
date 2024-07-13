@@ -30,7 +30,7 @@ public partial class PracticeRun : UserControl
 
     }
 
-    private async Task<string?> GetSavePiles()
+    private async Task<string?> GetSavePiles(string deckName)
     {
         var topLevel = TopLevel.GetTopLevel(this);
         if (topLevel == null)
@@ -38,21 +38,23 @@ public partial class PracticeRun : UserControl
             return null;
         }
 
-        var files = await topLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+        var suggestedName = string.IsNullOrEmpty(deckName) ? "practice" : deckName;
+        var file = await topLevel.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
         {
-            AllowMultiple = false,
             Title = "Save Piles",
-            FileTypeFilter = [new FilePickerFileType("Piles"){
+            FileTypeChoices = [new FilePickerFileType("Piles"){
                 Patterns = [".piles"]
-            }]
+            }],
+            DefaultExtension = ".piles",
+            SuggestedFileName = suggestedName
         });
 
-        if (files.Count == 0)
+        if (file == null)
         {
             return null;
         }
 
-        var filePath = files[0].TryGetLocalPath();
+        var filePath = file.TryGetLocalPath();
         if (filePath == null)
         {
             return null;

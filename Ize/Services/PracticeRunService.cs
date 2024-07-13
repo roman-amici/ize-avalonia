@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Ize.Library;
 
@@ -8,12 +9,25 @@ namespace Ize.Services;
 public class PracticeRunService
 {
 
+    private static string[] defaultPiles = ["remaining", "working", "incorrect", "memorized"];
+
     public static async Task<PracticeRunService> CreateFromPiles(string pilesFilePath)
     {
         var piles = await IzePiles.LoadFromFile(pilesFilePath);
         var deck = await IzeDeck.LoadFromFile(piles.DeckPath);
 
         return new PracticeRunService(piles.PilesOrder[0], deck, piles);
+    }
+
+    public static async Task<PracticeRunService> CreateFromDeck(string deckFilePath)
+    {
+        var deck = await IzeDeck.LoadFromFile(deckFilePath);
+        var piles = new IzePiles(defaultPiles, deck)
+        {
+            DeckPath = deck.LoadedFilePath!
+        };
+
+        return new PracticeRunService(piles.PilesOrder.First(), deck, piles);
     }
 
     public List<CardMetadata> GetActivePile()
@@ -99,5 +113,4 @@ public class PracticeRunService
         activePile.RemoveAt(activePile.Count - 1);
         activePile.Insert(0, cardMeta);
     }
-
 }

@@ -93,9 +93,32 @@ public partial class MainMenuViewModel : ObservableObject
 
 
     [RelayCommand]
-    private void NewPractice()
+    private async Task NewPractice(string filePath)
     {
+        if (string.IsNullOrEmpty(filePath))
+        {
+            var task = PickFile?.Invoke("Select Deck", [new FilePickerFileType("deck"){
+                Patterns = ["*.deck"]
+            }]);
 
+            if (task == null)
+            {
+                return;
+            }
+
+            filePath = await task;
+
+
+            if (string.IsNullOrEmpty(filePath))
+            {
+                return;
+            }
+
+            AddToRecentFiles(filePath);
+
+            var pilesService = await PracticeRunService.CreateFromDeck(filePath);
+            navigationService.NavigateMain(MainWindowView.PracticeRun, pilesService);
+        }
     }
 
 
