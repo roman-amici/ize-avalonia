@@ -1,0 +1,47 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Ize.DeckEditor"
+             xmlns:vm="using:Ize.ViewModels"
+             x:DataType="vm:DeckEditorViewModel">
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="*" />
+    </Grid.RowdDefinitions>
+
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="2*" />
+      <ColumnDefinition Width="2*" />
+      <ColumnDefinition Width="*" />
+    </Grid.ColumnDefinitions>
+
+    <Button Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" FontSize="16" HorizontalAlignment="Left" Command="{Binding FinishCommand}">
+        &lt;-
+    </Button>
+
+    <Button Grid.Row="0" Grid.Column="2" HorizontalAlignment="Left">Add</Button>
+
+    <!-- Front -->
+    <Grid>
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto" />
+      </Grid.RowDefinitions>
+    </Grid>
+    <!-- Back -->
+
+    <ListView Grid.Row="0" Grid.RowSpan="3" Grid.Column="2" ItemsSource="{Binding Cards}" SelectedItem="{Binding SelectedCard}">
+      <ListBox.ItemTemplate>
+        <DataTemplate>
+          <StackPanel Height="80">
+            <TextBlock HorizontalAlignment="Center" Text="{Binding CardIndex}" />
+            <TextBlock Text="{Binding FrontText}" TextTrimming="CharacterEllipsis" />
+            <TextBlock Text="{Binding BackText}" TextTrimming="CharacterEllipsis" />
+          </StackPanel>
+        </DataTemplate>
+      </ListBox.ItemTemplate>
+    </ListView>
+  </Grid>
+</UserControl>
