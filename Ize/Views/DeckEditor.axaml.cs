@@ -2,7 +2,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 
-namespace Ize;
+namespace Ize.Views;
 
 public partial class DeckEditor : UserControl
 {

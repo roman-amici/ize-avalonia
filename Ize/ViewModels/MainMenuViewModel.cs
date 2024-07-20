@@ -32,7 +32,8 @@ public partial class MainMenuViewModel : ObservableObject
         }
     }
 
-    [ObservableProperty] private ObservableCollection<RecentFileModel> recentFiles = new();
+    [ObservableProperty] 
+    private ObservableCollection<RecentFileModel> recentFiles = new();
 
     public void SaveRecentFiles()
     {
@@ -93,7 +94,7 @@ public partial class MainMenuViewModel : ObservableObject
 
 
     [RelayCommand]
-    private async Task NewPractice(string filePath)
+    private async Task NewPractice(string? filePath)
     {
         if (string.IsNullOrEmpty(filePath))
         {
@@ -132,7 +133,7 @@ public partial class MainMenuViewModel : ObservableObject
     [RelayCommand]
     private void NewDeck()
     {
-
+        navigationService.NavigateMain(MainWindowView.DeckEditor, null);
     }
 
     public event EventHandler<IzeDeck>? DeckSelected;
