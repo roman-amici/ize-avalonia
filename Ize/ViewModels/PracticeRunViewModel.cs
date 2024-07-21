@@ -144,8 +144,10 @@ public partial class PracticeRunViewModel(NavigationService navigationService) :
             }
         }
 
+        var filePath = practiceRun?.Piles.OriginalFilePath;
+
         practiceRun = null;
-        navigationService.NavigateMain(MainWindowView.MainMenu, null);
+        navigationService.NavigateMain(MainWindowView.MainMenu, filePath);
     }
 
     [RelayCommand]

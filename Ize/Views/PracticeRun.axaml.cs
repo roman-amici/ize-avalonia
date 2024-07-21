@@ -27,7 +27,6 @@ public partial class PracticeRun : UserControl
                 vm.GetSavePilesPath = GetSavePiles;
             }
         }
-
     }
 
     private async Task<string?> GetSavePiles(string deckName)

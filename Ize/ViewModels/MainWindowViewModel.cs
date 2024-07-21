@@ -18,7 +18,7 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         MainMenuViewModel = new(servicesCollection.RecentFileService, servicesCollection.NavigationService);
         PracticeRunViewModel = new(servicesCollection.NavigationService);
-        DeckEditorViewModel = new();
+        DeckEditorViewModel = new(servicesCollection.NavigationService);
 
         servicesCollection.NavigationService.NavigationRequested += Navigate;
     }
@@ -28,6 +28,12 @@ public partial class MainWindowViewModel : ViewModelBase
         switch (view)
         {
             case MainWindowView.MainMenu:
+
+                if (sessionObject is string pathName)
+                {
+                    MainMenuViewModel.AddToRecentFiles(pathName);
+                }
+
                 SelectedViewModel = MainMenuViewModel;
                 break;
             case MainWindowView.PracticeRun:

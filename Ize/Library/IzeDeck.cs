@@ -62,4 +62,18 @@ public class IzeDeck
 
         return deck;
     }
+
+    public async Task SaveToFile(string filePath)
+    {
+        using var file = File.CreateText(filePath);
+
+        foreach (var card in Cards)
+        {
+            await file.WriteLineAsync(card.Key.ToString());
+            await file.WriteLineAsync(card.Value.Front.ToString());
+            await file.WriteLineAsync(card.Value.Back.ToString());
+            await file.WriteLineAsync();
+        }
+        
+    }
 }
