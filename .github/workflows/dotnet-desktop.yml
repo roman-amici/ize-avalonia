@@ -23,17 +23,16 @@ jobs:
       with:
         dotnet-version: 8.0.x
 
-                  
-    - name: Version Bump
-      id: versionBump
-      uses: anothrNick/github-tag-action@1.70.0
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        WITH_V: true
+    - name: Update Version
+      shell: pwsh
+      run: |
+        $verFile=(cat version.txt)
+        $version="$verFile.${{ github.run_number }}
+        echo "version=$version" >> $GITHUB_ENV
       
     # Publish the application
     - name: Publish
-      run: dotnet publish Ize\Ize.csproj --output artifacts -p:Version="${{ steps.versionBump.outputs.tag }}"
+      run: dotnet publish Ize\Ize.csproj --output artifacts -p:Version=$version
 
     # Upload the Exe
     - name: Upload build artifacts
