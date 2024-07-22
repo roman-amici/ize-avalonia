@@ -22,18 +22,15 @@ jobs:
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8.0.x
-
-    - name: Update Version
+      
+    # Publish the application
+    - name: Publish
       shell: pwsh
       run: |
         $verFile=$(cat version.txt)
         $version="$verFile.${{ github.run_number }}"
         echo $version
-        echo "version=$version" >> $GITHUB_ENV
-      
-    # Publish the application
-    - name: Publish
-      run: dotnet publish Ize\Ize.csproj --output artifacts -p:Version=$version
+        dotnet publish Ize\Ize.csproj --output artifacts -p:Version=$version
 
     # Upload the Exe
     - name: Upload build artifacts
