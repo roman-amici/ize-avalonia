@@ -27,7 +27,7 @@ jobs:
       shell: pwsh
       run: |
         $verFile=(cat version.txt)
-        $version="$verFile.${{ github.run_number }}
+        $version="$verFile.${{ github.run_number }}"
         echo "version=$version" >> $GITHUB_ENV
       
     # Publish the application
