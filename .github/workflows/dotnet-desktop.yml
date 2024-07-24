@@ -1,0 +1,40 @@
+name: .NET Core Desktop
+
+on:
+  push:
+    branches: [ "main" ]
+    
+jobs:
+
+  build:
+  
+    runs-on: windows-latest  # For a list of available runner types, refer to
+                             # https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    # Install the .NET Core workload
+    - name: Install .NET Core
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+      
+    # Publish the application
+    - name: Publish
+      shell: pwsh
+      run: |
+        $verFile=$(cat version.txt)
+        $version="$verFile.${{ github.run_number }}"
+        echo $version
+        dotnet publish Ize\Ize.csproj --output artifacts -p:Version=$version
+
+    # Upload the Exe
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: Executable
+        path: artifacts
