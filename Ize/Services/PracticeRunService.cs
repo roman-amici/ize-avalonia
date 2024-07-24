@@ -8,109 +8,130 @@ namespace Ize.Services;
 
 public class PracticeRunService
 {
+	private static readonly string[] defaultPiles = ["remaining", "working", "incorrect", "memorized"];
 
-    private static string[] defaultPiles = ["remaining", "working", "incorrect", "memorized"];
+	public PracticeRunService(string activePile, IzeDeck deck, IzePiles piles)
+	{
+		ActivePileName = activePile;
+		Piles = piles;
+		Deck = deck;
 
-    public static async Task<PracticeRunService> CreateFromPiles(string pilesFilePath)
-    {
-        var piles = await IzePiles.LoadFromFile(pilesFilePath);
-        var deck = await IzeDeck.LoadFromFile(piles.DeckPath);
+		if (!Piles.Piles.ContainsKey(activePile))
+		{
+			throw new InvalidOperationException($"Pile {activePile} was not in list of piles.");
+		}
 
-        return new PracticeRunService(piles.PilesOrder[0], deck, piles);
-    }
+		var cardsInPile = new HashSet<ulong>();
+		foreach (var pile in piles.Piles)
+		{
+			foreach (var card in pile.Value)
+			{
+				cardsInPile.Add(card.CardIndex);
+			}
+		}
 
-    public static async Task<PracticeRunService> CreateFromDeck(string deckFilePath)
-    {
-        var deck = await IzeDeck.LoadFromFile(deckFilePath);
-        var piles = new IzePiles(defaultPiles, deck)
-        {
-            DeckPath = deck.LoadedFilePath!
-        };
+		var activePileList = GetActivePile();
+		foreach (var cardIndex in deck.Cards.Keys)
+		{
+			if (!cardsInPile.Contains(cardIndex))
+			{
+				activePileList.Add(new CardMetadata
+				{
+					CardIndex = cardIndex
+				});
+			}
+		}
 
-        return new PracticeRunService(piles.PilesOrder.First(), deck, piles);
-    }
+		Shuffle();
+	}
 
-    public List<CardMetadata> GetActivePile()
-    {
-        return Piles.Piles[ActivePileName];
-    }
+	public string ActivePileName { get; }
+	public IzePiles Piles { get; }
+	public IzeDeck Deck { get; }
 
-    public string ActivePileName {get;}
-    public IzePiles Piles {get;}
-    public IzeDeck Deck {get;}
+	public static async Task<PracticeRunService> CreateFromPiles(string pilesFilePath)
+	{
+		var piles = await IzePiles.LoadFromFile(pilesFilePath);
+		var deck = await IzeDeck.LoadFromFile(piles.DeckPath);
 
-    public PracticeRunService(string activePile, IzeDeck deck, IzePiles piles)
-    {
-        ActivePileName = activePile;
-        Piles = piles;
-        Deck = deck;
+		return new PracticeRunService(piles.PilesOrder[0], deck, piles);
+	}
 
-        if (!Piles.Piles.ContainsKey(activePile))
-        {
-            throw new InvalidOperationException($"Pile {activePile} was not in list of piles.");
-        }
+	public static async Task<PracticeRunService> CreateFromDeck(string deckFilePath)
+	{
+		var deck = await IzeDeck.LoadFromFile(deckFilePath);
+		var piles = new IzePiles(defaultPiles, deck)
+		{
+			DeckPath = deck.LoadedFilePath!
+		};
 
-        Shuffle();
-    }
+		return new PracticeRunService(piles.PilesOrder.First(), deck, piles);
+	}
 
-    public void MoveToActive(string destinationPileName)
-    {
-        if (destinationPileName == ActivePileName)
-        {
-            return;
-        }
+	public List<CardMetadata> GetActivePile()
+	{
+		return Piles.Piles[ActivePileName];
+	}
 
-        var destinationPile = Piles.Piles[destinationPileName];
-        var activePile = GetActivePile();
-        activePile.AddRange( destinationPile );
-        destinationPile.Clear();
-    }
+	public void MoveToActive(string destinationPileName)
+	{
+		if (destinationPileName == ActivePileName)
+		{
+			return;
+		}
 
-    public void Shuffle()
-    {
-        var random = new Random();
-        GetActivePile().Sort( (_, _) => random.Next(-200, 200));
-    }
+		var destinationPile = Piles.Piles[destinationPileName];
+		var activePile = GetActivePile();
+		activePile.AddRange(destinationPile);
+		destinationPile.Clear();
+	}
 
-    public IzeCard? CurrentCard(){
-        var activePile = GetActivePile();
+	public void Shuffle()
+	{
+		var random = new Random();
+		GetActivePile().Sort((_, _) => random.Next(-200, 200));
+	}
 
-        if (activePile.Count == 0)
-        {
-            return null;
-        }
+	public IzeCard? CurrentCard()
+	{
+		var activePile = GetActivePile();
 
-        var currentMeta = activePile[^1];
+		if (activePile.Count == 0)
+		{
+			return null;
+		}
 
-        return Deck.Cards[currentMeta.CardIndex];
-    }
+		var currentMeta = activePile[^1];
 
-    public void MoveTo(string destinationPile)
-    {
-        var activePile = Piles.Piles[ActivePileName];
+		return Deck.Cards[currentMeta.CardIndex];
+	}
 
-        if (activePile.Count == 0)
-        {
-            return;
-        }
+	public void MoveTo(string destinationPile)
+	{
+		var activePile = Piles.Piles[ActivePileName];
 
-        var cardMeta = activePile[^1];
-        activePile.RemoveAt(activePile.Count - 1);
+		if (activePile.Count == 0)
+		{
+			return;
+		}
 
-        Piles.Piles[destinationPile].Add(cardMeta);
-    }
+		var cardMeta = activePile[^1];
+		activePile.RemoveAt(activePile.Count - 1);
 
-    public void Skip()
-    {
-        var activePile = Piles.Piles[ActivePileName];
+		Piles.Piles[destinationPile].Add(cardMeta);
+	}
 
-        if (activePile.Count == 0)
-        {
-            return;
-        }
+	public void Skip()
+	{
+		var activePile = Piles.Piles[ActivePileName];
 
-        var cardMeta = activePile[^1];
-        activePile.RemoveAt(activePile.Count - 1);
-        activePile.Insert(0, cardMeta);
-    }
+		if (activePile.Count == 0)
+		{
+			return;
+		}
+
+		var cardMeta = activePile[^1];
+		activePile.RemoveAt(activePile.Count - 1);
+		activePile.Insert(0, cardMeta);
+	}
 }
