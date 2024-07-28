@@ -49,6 +49,30 @@ public partial class MainMenuViewModel : ObservableObject
         }
     }
 
+    private async Task<string?> PickDeck()
+    {
+        var task = PickFile?.Invoke("Select Deck", [new FilePickerFileType("deck"){
+            Patterns = ["*.deck"]
+        }]);
+
+        if (task == null)
+        {
+            return null;
+        }
+
+        var filePath = await task;
+
+
+        if (string.IsNullOrEmpty(filePath))
+        {
+            return null;
+        }
+
+        AddToRecentFiles(filePath);
+
+        return filePath;
+    }
+
     [RelayCommand]
     private async Task ResumePractice(string? filePath)
     {
@@ -73,7 +97,23 @@ public partial class MainMenuViewModel : ObservableObject
 
         AddToRecentFiles(filePath);
 
-        var pilesService = await PracticeRunService.CreateFromPiles(filePath);
+        var piles = await IzePiles.LoadFromFile(filePath);
+        var pilesDirectory = Path.GetDirectoryName(filePath) ?? "./";
+
+        var deckPath = Path.Combine(pilesDirectory, piles.DeckPath);
+        if (!File.Exists(deckPath))
+        {
+            deckPath = await PickDeck();
+        }
+
+        if (string.IsNullOrEmpty(deckPath))
+        {
+            return;
+        }
+
+        var deck = await IzeDeck.LoadFromFile(deckPath);
+
+        var pilesService = new PracticeRunService(piles.PilesOrder.First(), deck, piles);
         navigationService.NavigateMain(MainWindowView.PracticeRun, pilesService);
     }
 
@@ -98,28 +138,18 @@ public partial class MainMenuViewModel : ObservableObject
     {
         if (string.IsNullOrEmpty(filePath))
         {
-            var task = PickFile?.Invoke("Select Deck", [new FilePickerFileType("deck"){
-                Patterns = ["*.deck"]
-            }]);
-
-            if (task == null)
-            {
-                return;
-            }
-
-            filePath = await task;
-
-
-            if (string.IsNullOrEmpty(filePath))
-            {
-                return;
-            }
-
-            AddToRecentFiles(filePath);
-
-            var pilesService = await PracticeRunService.CreateFromDeck(filePath);
-            navigationService.NavigateMain(MainWindowView.PracticeRun, pilesService);
+            filePath = await PickDeck();
         }
+
+        if (string.IsNullOrEmpty(filePath))
+        {
+            return;
+        }
+
+        var deck = await IzeDeck.LoadFromFile(filePath);
+
+        var pilesService = PracticeRunService.CreateFromDeck(deck);
+        navigationService.NavigateMain(MainWindowView.PracticeRun, pilesService);
     }
 
 
@@ -128,28 +158,17 @@ public partial class MainMenuViewModel : ObservableObject
     {
         if (string.IsNullOrEmpty(filePath))
         {
-            var task = PickFile?.Invoke("Select Deck", [new FilePickerFileType("deck"){
-                    Patterns = ["*.deck"]
-                }]);
-
-            if (task == null)
-            {
-                return;
-            }
-
-            filePath = await task;
+            filePath = await PickDeck();
 
             if (string.IsNullOrEmpty(filePath))
             {
                 return;
             }
-
-            AddToRecentFiles(filePath);
-
-            var deck = await IzeDeck.LoadFromFile(filePath);
-
-            navigationService.NavigateMain(MainWindowView.DeckEditor, deck);
         }
+
+        var deck = await IzeDeck.LoadFromFile(filePath);
+
+        navigationService.NavigateMain(MainWindowView.DeckEditor, deck);
     }
 
 

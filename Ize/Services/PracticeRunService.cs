@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Ize.Library;
@@ -49,20 +50,11 @@ public class PracticeRunService
 	public IzePiles Piles { get; }
 	public IzeDeck Deck { get; }
 
-	public static async Task<PracticeRunService> CreateFromPiles(string pilesFilePath)
+	public static PracticeRunService CreateFromDeck(IzeDeck deck)
 	{
-		var piles = await IzePiles.LoadFromFile(pilesFilePath);
-		var deck = await IzeDeck.LoadFromFile(piles.DeckPath);
-
-		return new PracticeRunService(piles.PilesOrder[0], deck, piles);
-	}
-
-	public static async Task<PracticeRunService> CreateFromDeck(string deckFilePath)
-	{
-		var deck = await IzeDeck.LoadFromFile(deckFilePath);
 		var piles = new IzePiles(defaultPiles, deck)
 		{
-			DeckPath = deck.LoadedFilePath!
+			DeckPath = Path.GetFileName(deck.LoadedFilePath!)
 		};
 
 		return new PracticeRunService(piles.PilesOrder.First(), deck, piles);
