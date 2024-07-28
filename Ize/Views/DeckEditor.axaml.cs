@@ -2,18 +2,17 @@ using System.IO;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Input;
+using Avalonia.Markup.Xaml;
 using Avalonia.Platform.Storage;
 using Ize.ViewModels;
 
 namespace Ize.Views;
 
-public partial class PracticeRun : UserControl
+public partial class DeckEditor : UserControl
 {
-    public PracticeRun()
+    public DeckEditor()
     {
         InitializeComponent();
-
         PropertyChanged += AddViewModelEvents;
 
     }
@@ -22,14 +21,14 @@ public partial class PracticeRun : UserControl
     {
         if (e.Property == DataContextProperty)
         {
-            if (DataContext is PracticeRunViewModel vm)
+            if (DataContext is DeckEditorViewModel vm)
             {
-                vm.GetSavePilesPath = GetSavePiles;
+                vm.GetSavePath = GetSaveDeckPath;
             }
         }
     }
 
-    private async Task<string?> GetSavePiles(string deckName)
+    private async Task<string?> GetSaveDeckPath()
     {
         var topLevel = TopLevel.GetTopLevel(this);
         if (topLevel == null)
@@ -37,14 +36,14 @@ public partial class PracticeRun : UserControl
             return null;
         }
 
-        var suggestedName = string.IsNullOrEmpty(deckName) ? "practice" : deckName;
+        var suggestedName = "cards";
         var file = await topLevel.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
         {
-            Title = "Save Piles",
-            FileTypeChoices = [new FilePickerFileType("Piles"){
-                Patterns = [".piles"]
+            Title = "Save Deck",
+            FileTypeChoices = [new FilePickerFileType("Deck"){
+                Patterns = [".deck"]
             }],
-            DefaultExtension = ".piles",
+            DefaultExtension = ".deck",
             SuggestedFileName = suggestedName
         });
 

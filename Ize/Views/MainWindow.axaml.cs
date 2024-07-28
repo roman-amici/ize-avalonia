@@ -22,6 +22,7 @@ public partial class MainWindow : Window
             vm.MainMenuViewModel.SaveRecentFiles();
 
             Task.Run(async () => await vm.PracticeRunViewModel.Finish()).Wait();
+            Task.Run(async () => await vm.DeckEditorViewModel.Finish()).Wait();
         }
     }
 }

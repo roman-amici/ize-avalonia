@@ -32,14 +32,15 @@ public partial class MainMenuViewModel : ObservableObject
         }
     }
 
-    [ObservableProperty] private ObservableCollection<RecentFileModel> recentFiles = new();
+    [ObservableProperty] 
+    private ObservableCollection<RecentFileModel> recentFiles = new();
 
     public void SaveRecentFiles()
     {
         recentFileService.SaveToFile();
     }
 
-    private void AddToRecentFiles(string filePath)
+    public void AddToRecentFiles(string filePath)
     {
         if (RecentFiles.FirstOrDefault(x => x.FullPath == filePath) == null)
         {
@@ -93,7 +94,7 @@ public partial class MainMenuViewModel : ObservableObject
 
 
     [RelayCommand]
-    private async Task NewPractice(string filePath)
+    private async Task NewPractice(string? filePath)
     {
         if (string.IsNullOrEmpty(filePath))
         {
@@ -123,19 +124,38 @@ public partial class MainMenuViewModel : ObservableObject
 
 
     [RelayCommand]
-    private async Task EditDeck(string filePath)
+    private async Task EditDeck(string? filePath)
     {
+        if (string.IsNullOrEmpty(filePath))
+        {
+            var task = PickFile?.Invoke("Select Deck", [new FilePickerFileType("deck"){
+                    Patterns = ["*.deck"]
+                }]);
 
+            if (task == null)
+            {
+                return;
+            }
+
+            filePath = await task;
+
+            if (string.IsNullOrEmpty(filePath))
+            {
+                return;
+            }
+
+            AddToRecentFiles(filePath);
+
+            var deck = await IzeDeck.LoadFromFile(filePath);
+
+            navigationService.NavigateMain(MainWindowView.DeckEditor, deck);
+        }
     }
 
 
     [RelayCommand]
     private void NewDeck()
     {
-
+        navigationService.NavigateMain(MainWindowView.DeckEditor, null);
     }
-
-    public event EventHandler<IzeDeck>? DeckSelected;
-    public event EventHandler<PracticeRunService>? PracticeRunSelected;
-
 }

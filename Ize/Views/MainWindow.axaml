@@ -34,6 +34,10 @@
         <DataTemplate DataType="{x:Type vm:PracticeRunViewModel}">
             <local:PracticeRun DataContext="{Binding}" />
         </DataTemplate>
+
+        <DataTemplate DataType="{x:Type vm:DeckEditorViewModel}">
+            <local:DeckEditor DataContext="{Binding}" />
+        </DataTemplate>
     </Window.DataTemplates>
 
     <ContentControl Content="{Binding SelectedViewModel}" />
